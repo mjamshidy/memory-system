@@ -15,9 +15,11 @@ from typing import Any
 import psycopg
 from psycopg.rows import dict_row
 import yaml
-from dotenv import load_dotenv
 
-load_dotenv()
+# Load secrets from Bitwarden Secrets Manager first.
+# Falls back to .env if BWS_ACCESS_TOKEN is not set (dev/offline mode).
+from secrets.loader import load as _load_secrets
+_load_secrets()
 
 log = logging.getLogger(__name__)
 

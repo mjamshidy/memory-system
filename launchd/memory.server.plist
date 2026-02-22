@@ -8,6 +8,9 @@
 
     <key>ProgramArguments</key>
     <array>
+        <string>BWS_BIN_PLACEHOLDER</string>
+        <string>run</string>
+        <string>--</string>
         <string>VENV_PYTHON_PLACEHOLDER</string>
         <string>-m</string>
         <string>uvicorn</string>
@@ -23,8 +26,8 @@
 
     <key>EnvironmentVariables</key>
     <dict>
-        <key>ENV_FILE</key>
-        <string>PROJECT_DIR_PLACEHOLDER/.env</string>
+        <key>BWS_ACCESS_TOKEN</key>
+        <string>BWS_ACCESS_TOKEN_PLACEHOLDER</string>
     </dict>
 
     <key>RunAtLoad</key>

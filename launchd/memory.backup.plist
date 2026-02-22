@@ -8,6 +8,9 @@
 
     <key>ProgramArguments</key>
     <array>
+        <string>BWS_BIN_PLACEHOLDER</string>
+        <string>run</string>
+        <string>--</string>
         <string>VENV_PYTHON_PLACEHOLDER</string>
         <string>-m</string>
         <string>sync.backup</string>
@@ -15,6 +18,12 @@
 
     <key>WorkingDirectory</key>
     <string>PROJECT_DIR_PLACEHOLDER</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>BWS_ACCESS_TOKEN</key>
+        <string>BWS_ACCESS_TOKEN_PLACEHOLDER</string>
+    </dict>
 
     <!-- Run every 6 hours: 01:00, 07:00, 13:00, 19:00 -->
     <key>StartCalendarInterval</key>

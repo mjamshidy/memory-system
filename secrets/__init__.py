@@ -1,0 +1,1 @@
+"""Bitwarden Secrets Manager integration."""

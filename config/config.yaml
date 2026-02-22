@@ -1,0 +1,109 @@
+# =============================================================================
+# memory-system — Main Configuration
+# Non-secret settings. Secrets go in .env
+# =============================================================================
+
+database:
+  name: memory_system
+  host: localhost
+  port: 5432
+
+backup:
+  icloud_folder: "Database Backups/memory-system"  # relative to iCloud Drive root
+  schedule_hours: 6                                  # backup every N hours
+  keep_days: 30
+  compress: true
+
+supabase_sync:
+  schedule_hours: 6
+  offset_hours: 3     # run 3h after backup to avoid overlap
+
+ingestion:
+  host: "0.0.0.0"
+  port: 8765
+  log_level: "info"
+  max_payload_size_mb: 10
+
+analysis:
+  worker_interval_secs: 300   # poll every 5 minutes
+  batch_size: 100              # events per analysis run
+  importance_alert_threshold: 4  # immediate alert above this
+
+  # LLM model assignments (provider:model)
+  llm_gist: "claude:claude-haiku-4-5-20251001"     # cheap model for routine gists
+  llm_digest: "claude:claude-sonnet-4-6"            # better model for daily digests
+  llm_alert: "claude:claude-haiku-4-5-20251001"     # fast for alert triage
+  llm_query: "claude:claude-sonnet-4-6"             # best for on-demand queries
+
+obsidian:
+  memory_root: "Memory"
+  folders:
+    events:   "Memory/Events"
+    analysis: "Memory/Analysis"
+    digests:  "Memory/Digests"
+    queries:  "Memory/Queries"
+    alerts:   "Memory/Alerts"
+    agents:   "Memory/Agents"
+
+  # Tags applied to all generated notes
+  base_tags: ["#memory-system"]
+
+  # Source → Obsidian tag mapping
+  source_tags:
+    haos:         "#source/home"
+    telegram:     "#source/telegram"
+    whatsapp:     "#source/whatsapp"
+    imessage:     "#source/imessage"
+    twitter:      "#source/twitter"
+    github:       "#source/github"
+    file_import:  "#source/import"
+    claude_api:   "#agent/claude"
+    codex_api:    "#agent/codex"
+    gemini_api:   "#agent/gemini"
+    openclaw:     "#agent/openclaw"
+
+digest:
+  daily_time: "07:00"     # local time
+  weekly_day: "monday"
+  include_sources: "all"  # or list specific source names
+
+notifications:
+  # Telegram message max length
+  telegram_max_chars: 4096
+
+  # OpenClaw dispatch endpoint
+  openclaw_endpoint: "/api/dispatch"
+
+  # Default channels per importance level
+  channels_by_importance:
+    1: []                                        # trivial — no notification
+    2: []                                        # low — no notification
+    3: ["obsidian"]                              # normal — obsidian only
+    4: ["telegram", "obsidian"]                 # high — telegram + obsidian
+    5: ["telegram", "openclaw", "obsidian"]     # critical — all channels
+
+sources:
+  # Social polling intervals (seconds). 0 = webhook only.
+  poll_intervals:
+    twitter: 3600
+    github: 1800
+    telegram: 0        # webhook
+    whatsapp: 0        # via openclaw
+    imessage: 0        # via openclaw
+
+  haos:
+    # HAOS event types to capture
+    capture_domains:
+      - "binary_sensor"
+      - "sensor"
+      - "person"
+      - "device_tracker"
+      - "alarm_control_panel"
+      - "lock"
+      - "automation"
+    # HAOS events that trigger immediate alerts
+    alert_events:
+      - "alarm_trigger"
+      - "motion_detected"
+      - "door_opened"
+      - "lock_jammed"

@@ -1,0 +1,93 @@
+# =============================================================================
+# alert_rules.yaml — Human-readable alert rule definitions
+# These are loaded by the alert engine on startup / reload.
+# Rules are also stored in the alerts table; this file is the source of truth.
+# =============================================================================
+
+rules:
+
+  - name: critical_importance
+    description: "Any event with importance=5"
+    enabled: true
+    rule_type: threshold
+    condition:
+      field: importance
+      operator: gte
+      value: 5
+    channels: [telegram, openclaw, obsidian]
+    cooldown_secs: 0  # no cooldown for critical
+
+  - name: haos_security
+    description: "Home security events (motion, door, lock, alarm)"
+    enabled: true
+    rule_type: keyword
+    sources: [haos]
+    condition:
+      keywords: [motion, door, alarm, intrusion, security, lock, unlock, armed, disarmed]
+      match: any
+    importance_min: 2
+    channels: [telegram, obsidian]
+    cooldown_secs: 60
+
+  - name: system_failure
+    description: "Any backup, sync, or ingestion failure"
+    enabled: true
+    rule_type: pattern
+    sources: [system]
+    condition:
+      pattern: "(backup_failed|sync_failed|ingestion_error|startup_fail)"
+      flags: i
+    channels: [telegram]
+    cooldown_secs: 300
+
+  - name: agent_exception
+    description: "AI agent reports an error or exception"
+    enabled: true
+    rule_type: pattern
+    sources: [claude_api, codex_api, gemini_api, openclaw]
+    condition:
+      pattern: "(unhandled exception|fatal error|crash|rate.?limit|api.*error)"
+      flags: i
+    importance_min: 3
+    channels: [telegram]
+    cooldown_secs: 600
+
+  - name: finance_keyword
+    description: "Financial events from any source"
+    enabled: true
+    rule_type: keyword
+    condition:
+      keywords: [payment, invoice, charge, transaction, bank, overdue, fraud, dispute]
+      match: any
+    importance_min: 3
+    channels: [telegram, obsidian]
+    cooldown_secs: 300
+
+  - name: health_keyword
+    description: "Health-related events"
+    enabled: true
+    rule_type: keyword
+    condition:
+      keywords: [medication, appointment, doctor, diagnosis, test result, prescription]
+      match: any
+    importance_min: 3
+    channels: [obsidian]
+    cooldown_secs: 3600
+
+  - name: daily_digest_reminder
+    description: "Daily digest generation at 07:00"
+    enabled: true
+    rule_type: schedule
+    condition:
+      cron: "0 7 * * *"
+    channels: [telegram, obsidian]
+    cooldown_secs: 82800  # 23 hours
+
+  - name: weekly_summary
+    description: "Weekly deep analysis every Monday at 08:00"
+    enabled: true
+    rule_type: schedule
+    condition:
+      cron: "0 8 * * 1"
+    channels: [telegram, obsidian]
+    cooldown_secs: 604800  # 7 days
